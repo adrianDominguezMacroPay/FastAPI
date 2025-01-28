@@ -3,6 +3,17 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from typing import Optional
 
+
+
+class Movie(BaseModel):
+    id:  Optional[int] = None
+    title: str
+    overview: str
+    year: int
+    rating: float
+    category: str
+
+
 movies = [{
                 "id": 1,
                 "title": "Inception",
@@ -75,37 +86,23 @@ def get_movies(category: str):
 
 
 @app.post("/movies",tags=["Movies"])
-def create_movie(id: int = Body(),
-                 title: str = Body(),
-                 overview: str = Body(),
-                 year: int = Body(),
-                 rating: float = Body(),
-                 category: str  = Body()                 
-              ):
-    
+def create_movie(movie: Movie):
     print(movies.count)
-    movies.append({id:id, title:title, overview:overview, year:year, rating:rating, category:category})
+    movies.append(movie)
     print(movies.count)
-    return title
+    return movies
 
 
-
-@app.put("/movies/{movie_id}",tags=["Movies"])
-def update_movie(movie_id: int, 
-                 title: str = Body(),
-                 overview: str = Body(),
-                 year: int = Body(),
-                 rating: float = Body(),
-                 category: str  = Body()                 
-              ):
-    for movie in movies:
-        if movie["id"] == movie_id:
-            movie["title"] = title
-            movie["overview"] = overview
-            movie["year"] = year
-            movie["rating"] = rating
-            movie["category"] = category
-            return movie
+@app.put("/movies/{id}",tags=["Movies"])
+def update_movie(id: int, movie: Movie):
+    for item in movies:
+        if item["id"] == id:
+            item["title"] = movie.title
+            item["overview"] = movie.overview
+            item["year"] = movie.year
+            item["rating"] = movie.rating
+            item["category"] = movie.category
+            return item
     return {"error": "Movie not found"}
 
 
